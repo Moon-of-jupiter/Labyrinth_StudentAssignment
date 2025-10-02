@@ -466,7 +466,7 @@ PrefabInstance:
       objectReference: {fileID: 2120782614}
     - target: {fileID: 2697895973313742624, guid: 0a7983cc724fc554a9cbc4ef450723a9, type: 3}
       propertyPath: fileName
-      value: ex2.json
+      value: ex1.json
       objectReference: {fileID: 0}
     - target: {fileID: 2697895973313742624, guid: 0a7983cc724fc554a9cbc4ef450723a9, type: 3}
       propertyPath: endPrefab
@@ -1441,6 +1441,7 @@ MonoBehaviour:
   jumpPathColor: {r: 1, g: 0, b: 0, a: 1}
   ventPathColor: {r: 0, g: 1, b: 1, a: 1}
   pathNodeSize: 0.3
+  visual_offset: {x: 0.5, y: 3, z: 0.5}
 --- !u!1 &2120782613
 GameObject:
   m_ObjectHideFlags: 0

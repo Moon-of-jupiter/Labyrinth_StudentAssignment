@@ -5,10 +5,11 @@ using Unity.VisualScripting;
 public class MapConnection
 {
     float cost;
-
+    public List<MapNode> positions = new();
     public MapConnection(MapNode a, MapNode b, float cost)
     {
-
+        positions.Add(a); positions.Add(b);
+        this.cost = cost;
     }
 
     public MapConnection(List<MapConnection> connectionChain)
@@ -21,7 +22,7 @@ public class MapConnection
         }
     }
 
-    public LinkedList<MapNode> positions;
+    
 
-
+    
 }

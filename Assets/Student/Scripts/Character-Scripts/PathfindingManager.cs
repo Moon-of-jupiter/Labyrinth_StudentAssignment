@@ -20,6 +20,9 @@ public class PathfinderManager : MonoBehaviour
     public Color ventPathColor = Color.cyan; // New color for vent teleportation
     public float pathNodeSize = 0.3f;
 
+    [Header("Custom Debug Visualization")]
+    public Vector3 visual_offset;
+
     private List<GameObject> debugPathObjects = new List<GameObject>();
     private IMapData mapDataInterface;
 
@@ -107,6 +110,14 @@ public class PathfinderManager : MonoBehaviour
         if (pathfindingUI != null)
         {
             pathfindingUI.UpdatePathNotFound();
+        }
+    }
+
+    private void OnDrawGizmos()
+    {
+        if (characterMovement?.GetGrid() != null && isActiveAndEnabled)
+        {
+            PathfindingAlgorithm.Visualize(characterMovement.GetGrid(), visual_offset);
         }
     }
 
@@ -285,5 +296,6 @@ public class PathfinderManager : MonoBehaviour
     private void OnDestroy()
     {
         ClearDebugPath();
+        PathfindingAlgorithm.OnApplicationEnd();
     }
 }

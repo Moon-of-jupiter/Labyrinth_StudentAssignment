@@ -1,8 +1,11 @@
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public static class PathfindingAlgorithm
 {
+    private static PathfindContext LastPathfind;
+
     /* <summary>
      TODO: Implement pathfinding algorithm here
      Find the shortest path from start to goal position in the maze.
@@ -31,11 +34,23 @@ public static class PathfindingAlgorithm
      
      HINT: Start simple with BFS (ignore wall costs and vents), then extend to weighted Dijkstra
      </summary> */
+
+
+    // I added Grid visualizationGrid in order to debug and visualize my algorithm
     public static List<Vector2Int> FindShortestPath(Vector2Int start, Vector2Int goal, IMapData mapData)
     {
         // TODO: Implement your pathfinding algorithm here
 
-        Debug.LogWarning("FindShortestPath not implemented yet!");
+        LastPathfind = new PathfindContext()
+        {
+            mapGraph = new MapGraphManager(mapData)
+        };
+
+        
+        
+        
+
+        //Debug.LogWarning("FindShortestPath not implemented yet!");
         return null;
     }
 
@@ -44,5 +59,32 @@ public static class PathfindingAlgorithm
         // TODO: Implement movement blocking logic
         // For now, allow all movement so character can move while you work on pathfinding
         return false;
+    }
+
+
+   
+
+    public static void Visualize(Grid grid, Vector3 offset)
+    {
+        LastPathfind.Visualize(grid, offset);
+    }
+
+    public static void OnApplicationEnd()
+    {
+        LastPathfind = default;
+    }
+
+
+
+}
+
+
+public struct PathfindContext
+{
+    public MapGraphManager mapGraph;
+
+    public void Visualize(Grid grid, Vector3 offset)
+    {
+        mapGraph?.VisualizeGraph(grid, offset);
     }
 }
