@@ -57,10 +57,21 @@ public class AStar_Algorithm
             }
         }
     }
-
-    public void PathFindOneStep()
+    
+    public bool FindPath()
     {
-        if (pathFound || open.IsEmpty()) return;
+        int c = 0;
+        while (PathFindOneStep())
+        {
+            c++;
+        }
+
+        return pathFound;
+    }
+
+    public bool PathFindOneStep()
+    {
+        if (pathFound || open.IsEmpty()) return false;
 
         NavNode current = open.PopFirst();
 
@@ -71,12 +82,23 @@ public class AStar_Algorithm
             pathFound = true;
         }
 
+        CreateNeighbours(current.position);
 
+        return true;
     }
 
     private void CreateNeighbours(Vector2Int pos)
     {
+        foreach (var conn in map_graph_data.map_node_connections_by_node[pos])
+        {
+            OpenNode(AppendConnection(CreateNode(pos, 0, new List<Vector2Int>()), conn));
+        }
+    }
 
+    private NavNode AppendConnection(NavNode node, MapConnection conn)
+    {
+        node.AppendConnnection(conn);
+        return node;
     }
 
     private NavNode CreateNode(Vector2Int pos, float one_g_cost, List<Vector2Int> parents)
@@ -86,7 +108,10 @@ public class AStar_Algorithm
 
     private void OpenNode(NavNode node)
     {
-        open.Push(node);
+        if (!closed.Contains(node.position))
+        {
+            open.Push(node);
+        }
     }
 
     private void CloseNode(NavNode node)

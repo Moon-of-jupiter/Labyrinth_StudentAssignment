@@ -15,4 +15,23 @@ public class NavNode
     {
 
     }
+
+    public void AppendConnnection(MapConnection mapConnection)
+    {
+        if (!(mapConnection.a == position || mapConnection.b == position)) return;
+        
+        
+        parents.Add(position);
+        
+        if (mapConnection.a == position)
+        {
+            position = mapConnection.b;
+        }
+        else if(mapConnection.b == position)
+        {
+            position = mapConnection.a;
+        }
+
+        g_cost += mapConnection.g_cost;
+    }
 }
