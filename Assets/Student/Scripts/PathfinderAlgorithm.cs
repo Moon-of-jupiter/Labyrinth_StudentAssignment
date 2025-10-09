@@ -87,21 +87,6 @@ public static class PathfindingAlgorithm
 
 }
 
-#region Map_Graph_Data
-
-
-
-
-
-
-#endregion
-
-
-#region PathFinding_Data
-
-
-#endregion
-
 //public struct PathfindContext
 //{
 //    public MapGraphManager mapGraph;

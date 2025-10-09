@@ -7,14 +7,14 @@ public class BinaryHeap<T> where T : IComparable<T>
 {
     private T[] buffer;
 
-    private int N = -1; //last used index of the buffer
-    private int size => N + 1;
+    private int N = 0; //last used index of the buffer
+    private int size => N;
 
     private IMyComparer<T> comparer;
 
     public BinaryHeap(IMyComparer<T> comparer, int starting_size = 1)
     {
-        buffer = new T[starting_size];
+        buffer = new T[starting_size+1];
         this.comparer = comparer;
     }
 
@@ -26,12 +26,26 @@ public class BinaryHeap<T> where T : IComparable<T>
     {
         var copy = new T[capacity];
 
-        for (int i = 0; i < N; i++)
+        for (int i = 0; i <= N; i++)
         {
             copy[i] = buffer[i];
         }
 
         buffer = copy;
+    }
+
+    private void IncrementSize()
+    {
+        if (++N >= buffer.Length)
+        {
+            UpdateCapacity((N) * 2);
+        }
+    }
+
+    private void DecrementSize()
+    {
+        buffer[N--] = default;
+        
     }
 
     #endregion
@@ -40,19 +54,22 @@ public class BinaryHeap<T> where T : IComparable<T>
 
     public void PushSorted(T item)
     {
-        if (++N >= buffer.Length)
-        {
-            UpdateCapacity((N) * 2);
-        }
+        IncrementSize();
 
         buffer[N] = item;
         
-       Swim(size);
+        Swim(size);
     }
 
     public T PopFirst()
     {
         T result = PeekFirst();
+
+        Swap(First(), N);
+        
+        DecrementSize();
+
+        Sink(First());
 
         return result;
     }
@@ -68,19 +85,24 @@ public class BinaryHeap<T> where T : IComparable<T>
 
     public T PeekFirst()
     {
-        return buffer[0];
+        return buffer[First()];
     }
 
     public bool TryPeekFirst(out T result)
     {
-        if (buffer.Length == 0)
+        if (buffer.Length == First())
         {
             result = default(T);
             return false; 
         }
 
-        result = buffer[0];
+        result = buffer[First()];
         return true;
+    }
+
+    public bool IsEmpty()
+    {
+        return N > First();
     }
 
     #endregion
@@ -95,7 +117,7 @@ public class BinaryHeap<T> where T : IComparable<T>
     }
     private void Swim(int index)
     {
-        while (index > 1 && Less(GetParentIndex(index), index))
+        while (index > First() && Less(GetParentIndex(index), index))
         {
             Swap(index, GetParentIndex(index));
 
@@ -130,7 +152,7 @@ public class BinaryHeap<T> where T : IComparable<T>
 
     private bool NodeExists(int index)
     {
-        if(index < 0 || index > N) return false;
+        if(index < First() || index > N) return false;
 
         if (buffer[index] == null) return false;
 
@@ -153,6 +175,11 @@ public class BinaryHeap<T> where T : IComparable<T>
 
 
     #region Buffer Navigation
+
+    private int First()
+    {
+        return 1;
+    }
 
     private int GetLeftChildIndex(int k)
     {
