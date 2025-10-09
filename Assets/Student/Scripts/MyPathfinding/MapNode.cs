@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
+using System;
+[Obsolete()]
 public class MapNode
 {
     public List<MapConnection> connections = new();

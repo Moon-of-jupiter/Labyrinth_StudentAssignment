@@ -4,25 +4,18 @@ using Unity.VisualScripting;
 
 public class MapConnection
 {
-    float cost;
-    public List<MapNode> positions = new();
-    public MapConnection(MapNode a, MapNode b, float cost)
+    public Vector2Int a;
+    public Vector2Int b;
+
+    public float g_cost;
+
+    public MapConnection(Vector2Int a, Vector2Int b, float g_cost)
     {
-        positions.Add(a); positions.Add(b);
-        this.cost = cost;
+        this.a = a;
+        this.b = b;
+        this.g_cost = g_cost;
     }
 
-    public MapConnection(List<MapConnection> connectionChain)
-    {
-        for(int i = 0; i < connectionChain.Count; i++)
-        {
-            cost += connectionChain[i].cost;
 
-            positions.AddRange(connectionChain[i].positions);
-        }
-    }
 
-    
-
-    
 }

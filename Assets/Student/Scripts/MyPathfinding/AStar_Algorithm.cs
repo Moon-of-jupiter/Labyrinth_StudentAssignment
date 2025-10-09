@@ -1,17 +1,29 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 public class AStar_Algorithm
 {
 
 
+    private Dictionary<Vector2Int, float> map_node_h_cost;
 
-    protected NavNode current;
+    public bool pathFound { get; private set; }
 
-    
-    public AStar_Algorithm(Vector2Int start, Vector2Int end, MapGraphManager map)
+    private MapGraphManager map_graph_data;
+
+    public AStar_Algorithm(MapGraphManager map_graph_data)
     {
-
+        this.map_graph_data = map_graph_data;
+        
+        
     }
 
+    public void PathFindOneSetp()
+    {
+        if (pathFound) return;
+
+
+
+    }
 
 }

@@ -3,54 +3,50 @@ using System.Collections.Generic;
 using System.Linq;
 public class MapGraphManager
 {
-    public List<MapNode> mapNodes = new();
-    public List<MapConnection> mapConnections = new();
+    private Dictionary<Vector2Int, List<MapConnection>> map_node_connections_by_node = new();
 
-    public Dictionary<Vector2Int, MapNode> nodes_by_pos = new();
+    private HashSet<Vector2Int> map_nodes = new();
 
-    private Vector3 visualOffset = new Vector3(0.5f, 0.5f, 0.5f);
+    public IMapData mapData;
 
-    // raw constructor for building every map node
     public MapGraphManager(IMapData mapData)
     {
-        for(int x = 0; x < mapData.Width; x++)
+        this.mapData = mapData;
+        BuildGraph(mapData);
+    }
+
+    public void BuildGraph(IMapData mapData)
+    {
+        for (int x = 0; x < mapData.Width; x++)
         {
             for (int y = 0; y < mapData.Height; y++)
             {
-                AddMapNode(new MapNode(new Vector2Int(x, y)));
+                AddMapNode(new Vector2Int(x, y));
             }
         }
 
-        for(int i = 0; i < mapNodes.Count(); i++)
+        foreach (var thisNode in map_nodes)
         {
-            var thisNode = mapNodes[i];
-            var pos = thisNode.position;
 
-            if (!mapData.HasHorizontalWall(pos.x, pos.y))
+            if (!mapData.HasHorizontalWall(thisNode.x, thisNode.y))
             {
-                if(nodes_by_pos.TryGetValue(pos + new Vector2Int(0,-1), out var otherNode))
+                if (map_nodes.TryGetValue(thisNode + new Vector2Int(0, -1), out var otherNode))
                 {
-                    AddConnection(
-                        new MapConnection
-                        (
-                            thisNode, 
-                            otherNode, 
-                            mapData.GetHorizontalWallCost(pos.x,pos.y)
-                        ));
+                    float cost = mapData.GetHorizontalWallCost(thisNode.x, thisNode.y);
+
+                    AddConnection(thisNode, otherNode, cost);
+                    AddConnection(otherNode, thisNode, cost);
                 }
             }
 
-            if (!mapData.HasVerticalWall(pos.x, pos.y))
+            if (!mapData.HasVerticalWall(thisNode.x, thisNode.y))
             {
-                if (nodes_by_pos.TryGetValue(pos + new Vector2Int(-1, 0), out var otherNode))
+                if (map_nodes.TryGetValue(thisNode + new Vector2Int(-1, 0), out var otherNode))
                 {
-                    AddConnection(
-                        new MapConnection
-                        (
-                            thisNode,
-                            otherNode,
-                            mapData.GetVerticalWallCost(pos.x, pos.y)
-                        ));
+                    float cost = mapData.GetVerticalWallCost(thisNode.x, thisNode.y);
+
+                    AddConnection(thisNode, otherNode, cost);
+                    AddConnection(otherNode, thisNode, cost);
                 }
             }
 
@@ -58,65 +54,25 @@ public class MapGraphManager
         }
     }
 
-
-    public void AddMapNode(MapNode node)
+    private void AddMapNode(Vector2Int newNode)
     {
-        mapNodes.Add(node);
-        nodes_by_pos.Add(node.position, node);
+        map_nodes.Add(newNode);
     }
 
-    public void AddConnection(MapConnection connection, bool addToNodes = true)
+
+    private void AddConnection(Vector2Int a, Vector2Int b, float g_cost)
     {
-        mapConnections.Add(connection);
+        List<MapConnection> connections;
 
-        if(addToNodes)
+        if (!map_node_connections_by_node.TryGetValue(a, out connections))
         {
-            connection.positions.First().AddConnection(connection);
-            connection.positions.Last().AddConnection(connection);
-        }
-    }
+            connections = new();
 
-    
-    public void VisualizeGraph(Grid toWorldConverterGrid, Vector3 offset)
-    {
-        visualOffset = offset;
+            map_node_connections_by_node.Add(a, connections);
 
-        for(int i = 0; i < mapNodes.Count; i++)
-        {
-            
-
-            DrawDebugPoint(mapNodes[i].position, toWorldConverterGrid);
 
         }
 
-        for(int i = 0; i < mapConnections.Count; i++)
-        {
-            var points = mapConnections[i].positions;
-
-            Vector2Int lastPos = points[0].position;
-
-            for (int j = 1; j < points.Count - 1; j++)
-            {
-                DrawDebugLine(lastPos, points[j].position, toWorldConverterGrid);
-
-                lastPos = points[j].position;
-            }
-
-            DrawDebugLine(lastPos, points.Last().position, toWorldConverterGrid);
-
-
-        }
-    }
-
-    protected void DrawDebugPoint(Vector2Int position, Grid grid)
-    {
-        var pos = grid.GridToWorldPosition(position.x,position.y) + visualOffset;
-
-        Gizmos.DrawSphere(pos, 0.05f);
-    }
-
-    protected void DrawDebugLine(Vector2Int a, Vector2Int b, Grid grid)
-    {
-        Debug.DrawLine(grid.GridToWorldPosition(a.x, a.y) + visualOffset, grid.GridToWorldPosition(b.x, b.y) + visualOffset, Color.yellow);
+        connections.Add(new MapConnection(a, b, g_cost));
     }
 }
