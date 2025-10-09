@@ -55,6 +55,21 @@ public static class PathfindingAlgorithm
 
         graph_Data = new MapGraphManager(mapData);
 
+        SimpleLamdaComparer<int> comp = new SimpleLamdaComparer<int>((int a, int b) => { return -a.CompareTo(b); });
+
+        BinaryHeap<int> testHeap = new(comp);
+
+        testHeap.Push(10);
+        testHeap.Push(11);
+        testHeap.Push(5);
+        testHeap.Push(6);
+
+        testHeap.RemoveItem(6);
+
+        while (testHeap.TryPopFirst(out var a))
+        {
+            Debug.Log(a);
+        }
 
         //Debug.LogWarning("FindShortestPath not implemented yet!");
         return null;

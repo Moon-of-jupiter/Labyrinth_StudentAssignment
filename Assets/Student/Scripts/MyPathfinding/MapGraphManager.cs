@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 public class MapGraphManager
 {
-    private Dictionary<Vector2Int, List<MapConnection>> map_node_connections_by_node = new();
+    public Dictionary<Vector2Int, List<MapConnection>> map_node_connections_by_node { get; protected set; } = new();
 
-    private HashSet<Vector2Int> map_nodes = new();
+    public HashSet<Vector2Int> map_nodes { get; protected set; } = new();
 
     public IMapData mapData;
 
@@ -74,5 +74,11 @@ public class MapGraphManager
         }
 
         connections.Add(new MapConnection(a, b, g_cost));
+    }
+
+
+    public float GetDistance(Vector2Int a, Vector2Int b)
+    {
+        return Vector2.Distance(a, b);
     }
 }

@@ -2,10 +2,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.LightTransport;
 
-public class BinaryHeap<T> where T : IComparable<T>
+public class BinaryHeap<T>
 {
     private T[] buffer;
+
+    //private Dictionary<T, int> keyIndexPairs = new();
 
     private int N = 0; //last used index of the buffer
     private int size => N;
@@ -36,10 +39,11 @@ public class BinaryHeap<T> where T : IComparable<T>
 
     private void IncrementSize()
     {
-        if (++N >= buffer.Length)
+        if (N >= buffer.Length / 2)
         {
-            UpdateCapacity((N) * 2);
+            UpdateCapacity(buffer.Length * 2);
         }
+        N++;
     }
 
     private void DecrementSize()
@@ -52,13 +56,29 @@ public class BinaryHeap<T> where T : IComparable<T>
 
     #region External Buffer Interaction
 
-    public void PushSorted(T item)
+    public void Push(T item)
     {
         IncrementSize();
 
         buffer[N] = item;
         
         Swim(size);
+    }
+
+    public void RemoveItem(T item)
+    {
+        int index = Find(item);
+
+        if (!NodeExists(index)) return;
+        
+        Swap(index, N);
+        DecrementSize();
+
+        if (!NodeExists(index)) return;
+
+        Sink(index);
+        Swim(index);
+
     }
 
     public T PopFirst()
@@ -83,6 +103,8 @@ public class BinaryHeap<T> where T : IComparable<T>
         return true;
     }
 
+    
+
     public T PeekFirst()
     {
         return buffer[First()];
@@ -90,7 +112,7 @@ public class BinaryHeap<T> where T : IComparable<T>
 
     public bool TryPeekFirst(out T result)
     {
-        if (buffer.Length == First())
+        if (IsEmpty())
         {
             result = default(T);
             return false; 
@@ -102,7 +124,7 @@ public class BinaryHeap<T> where T : IComparable<T>
 
     public bool IsEmpty()
     {
-        return N > First();
+        return N < First();
     }
 
     #endregion
@@ -115,6 +137,13 @@ public class BinaryHeap<T> where T : IComparable<T>
         buffer[index_a ] = buffer[index_b];
         buffer[index_b ] = temp;
     }
+
+    //private void UpdateValue(T value, int index)
+    //{
+    //    buffer[index] = value;
+    //    keyIndexPairs[value] = index;
+    //}
+    
     private void Swim(int index)
     {
         while (index > First() && Less(GetParentIndex(index), index))
@@ -179,6 +208,16 @@ public class BinaryHeap<T> where T : IComparable<T>
     private int First()
     {
         return 1;
+    }
+
+    private int Find(T item) // slow O(N)
+    {
+        for(int i = 0; i <= N; i++)
+        {
+            if (buffer[i].Equals(item)) return i;
+        }
+
+        return -1;
     }
 
     private int GetLeftChildIndex(int k)

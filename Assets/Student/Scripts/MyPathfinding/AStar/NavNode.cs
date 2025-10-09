@@ -9,4 +9,10 @@ public class NavNode
 
     public List<Vector2Int> parents;
 
+    public Vector2Int position;
+
+    public NavNode()
+    {
+
+    }
 }
