@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 public class MapGraphManager
 {
     public Dictionary<Vector2Int, List<MapConnection>> map_node_connections_by_node { get; protected set; } = new();
@@ -28,31 +29,55 @@ public class MapGraphManager
         foreach (var thisNode in map_nodes)
         {
 
-            if (!mapData.HasHorizontalWall(thisNode.x, thisNode.y))
+            if (!Has_H_Wall(thisNode, out float cost_h))
             {
                 if (map_nodes.TryGetValue(thisNode + new Vector2Int(0, -1), out var otherNode))
                 {
-                    float cost = mapData.GetHorizontalWallCost(thisNode.x, thisNode.y);
-
-                    AddConnection(thisNode, otherNode, cost);
-                    AddConnection(otherNode, thisNode, cost);
+                    AddConnection(thisNode, otherNode, cost_h);
+                    AddConnection(otherNode, thisNode, cost_h);
                 }
             }
 
-            if (!mapData.HasVerticalWall(thisNode.x, thisNode.y))
+            if (!Has_V_Wall(thisNode, out float cost_v))
             {
                 if (map_nodes.TryGetValue(thisNode + new Vector2Int(-1, 0), out var otherNode))
                 {
-                    float cost = mapData.GetVerticalWallCost(thisNode.x, thisNode.y);
-
-                    AddConnection(thisNode, otherNode, cost);
-                    AddConnection(otherNode, thisNode, cost);
+                    AddConnection(thisNode, otherNode, cost_v);
+                    AddConnection(otherNode, thisNode, cost_v);
                 }
             }
 
-            // add vent stuff here
+            
+        }
+
+        foreach (var vent in mapData.GetAllVentPositions())
+        {
+            if (!map_nodes.Contains(vent)) continue;
+
+            foreach (var otherVent in mapData.GetOtherVentPositions(vent))
+            {
+                if (!map_nodes.Contains(otherVent)) continue;
+
+                AddConnection(otherVent, vent, mapData.GetVentCost(vent.x, vent.y));
+            }
         }
     }
+
+    private bool Has_H_Wall(Vector2Int pos, out float cost)
+    {
+        cost = mapData.GetHorizontalWallCost(pos.x, pos.y);
+
+        return cost > float.MaxValue / 2f;
+    }
+
+    private bool Has_V_Wall(Vector2Int pos, out float cost)
+    {
+        cost = mapData.GetVerticalWallCost(pos.x, pos.y);
+
+        return cost > float.MaxValue / 2f;
+    }
+
+    
 
     private void AddMapNode(Vector2Int newNode)
     {
@@ -79,6 +104,6 @@ public class MapGraphManager
 
     public float GetDistance(Vector2Int a, Vector2Int b)
     {
-        return Vector2.Distance(a, b);
+        return (int)Vector2.Distance(a, b);
     }
 }
