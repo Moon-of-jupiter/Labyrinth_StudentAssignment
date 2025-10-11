@@ -1,14 +1,17 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections.LowLevel.Unsafe;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.LightTransport;
+using static UnityEditor.Progress;
 
 public class BinaryHeap<T>
 {
     private T[] buffer;
 
-    //private Dictionary<T, int> keyIndexPairs = new();
+    private Dictionary<T, int> keyIndexPairs = new();
 
     private int N = 0; //last used index of the buffer
     private int size => N;
@@ -48,7 +51,8 @@ public class BinaryHeap<T>
 
     private void DecrementSize()
     {
-        buffer[N--] = default;
+        OnRemove(buffer[N]);
+        SetValue(N--, default);
         
     }
 
@@ -58,15 +62,23 @@ public class BinaryHeap<T>
 
     public void Push(T item)
     {
+        if (ContainsItem(item)) return;
+
         IncrementSize();
 
-        buffer[N] = item;
+
+        OnAdd(item,N);
+        SetValue(N, item);
         
+        //buffer[N] = item;
+
         Swim(size);
     }
 
     public void RemoveItem(T item)
     {
+        if (!ContainsItem(item)) return;
+
         int index = Find(item);
 
         if (!NodeExists(index)) return;
@@ -76,9 +88,29 @@ public class BinaryHeap<T>
 
         if (!NodeExists(index)) return;
 
-        Sink(index);
-        Swim(index);
+        Sink(Swim(index));
+        
 
+    }
+
+    public void ReplaceItem(T target, T replacement)
+    {
+        if (!ContainsItem(target) || ContainsItem(replacement)) return;
+
+        int index = Find(target);
+        OnRemove(target);
+        OnAdd(replacement, index);
+        SetValue(index, replacement);
+
+        Sink(Swim(index));
+    }
+
+    public void ReplaceIf(T target, T replacement, Func<T,T,bool> condition)
+    {
+        if (condition(target, replacement))
+        {
+            ReplaceItem(target, replacement);
+        }
     }
 
     public T PopFirst()
@@ -127,15 +159,42 @@ public class BinaryHeap<T>
         return N < First();
     }
 
+    public bool ContainsItem(T item)
+    {
+        if (item == null) return false;
+
+        return keyIndexPairs.ContainsKey(item);
+    }
+
     #endregion
 
     #region Internal Buffer Interaction
 
+    private void OnAdd(T val, int index)
+    {
+        keyIndexPairs.Add(val, index);
+    }
+
+    private void OnRemove(T val)
+    {
+        keyIndexPairs.Remove(val);
+    }
+
     private void Swap(int index_a, int index_b)
     {
         var temp = buffer[index_a];
-        buffer[index_a ] = buffer[index_b];
-        buffer[index_b ] = temp;
+        SetValue(index_a, buffer[index_b]);
+        SetValue(index_b, temp);
+    }
+
+    private void SetValue(int index, T val)
+    {
+        buffer[index] = val;
+
+        if (ContainsItem(val))
+        {
+            keyIndexPairs[val] = index;
+        }
     }
 
     //private void UpdateValue(T value, int index)
@@ -144,7 +203,7 @@ public class BinaryHeap<T>
     //    keyIndexPairs[value] = index;
     //}
     
-    private void Swim(int index)
+    private int Swim(int index)
     {
         while (index > First() && Less(GetParentIndex(index), index))
         {
@@ -152,9 +211,11 @@ public class BinaryHeap<T>
 
             index = GetParentIndex(index);
         }
+
+        return index;
     }
 
-    private void Sink(int index)
+    private int Sink(int index)
     {
         while(GetLeftChildIndex(index) <= size)
         {
@@ -166,6 +227,8 @@ public class BinaryHeap<T>
             index = j;
 
         }
+
+        return index;
     }
 
     
@@ -210,12 +273,14 @@ public class BinaryHeap<T>
         return 1;
     }
 
-    private int Find(T item) // slow O(N)
+    private int Find(T item) 
     {
-        for(int i = 0; i <= N; i++)
-        {
-            if (buffer[i].Equals(item)) return i;
-        }
+        if (keyIndexPairs.TryGetValue(item, out var index)) return index;
+
+        //for(int i = 0; i <= N; i++) // slow O(N)
+        //{
+        //    if (buffer[i].Equals(item)) return i;
+        //}        
 
         return -1;
     }

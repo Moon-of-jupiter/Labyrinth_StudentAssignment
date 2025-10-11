@@ -55,21 +55,31 @@ public static class PathfindingAlgorithm
 
         graph_Data = new MapGraphManager(mapData);
 
-        SimpleLamdaComparer<int> comp = new SimpleLamdaComparer<int>((int a, int b) => { return -a.CompareTo(b); });
+        var pathfinder = new AStar_Algorithm(start, goal, graph_Data);
 
-        BinaryHeap<int> testHeap = new(comp);
+        
 
-        testHeap.Push(10);
-        testHeap.Push(11);
-        testHeap.Push(5);
-        testHeap.Push(6);
-
-        testHeap.RemoveItem(6);
-
-        while (testHeap.TryPopFirst(out var a))
+        if( pathfinder.FindPath(out List<Vector2Int> path))
         {
-            Debug.Log(a);
+            return path;
         }
+        //SimpleLamdaComparer<int> comp = new SimpleLamdaComparer<int>((int a, int b) => { return -a.CompareTo(b); });
+
+        //BinaryHeap<int> testHeap = new(comp);
+
+        //testHeap.Push(10);
+        //testHeap.Push(11);
+        //testHeap.Push(5);
+        //testHeap.Push(6);
+
+        //testHeap.RemoveItem(6);
+
+        //testHeap.ReplaceItem(5,20);
+
+        //while (testHeap.TryPopFirst(out var a))
+        //{
+        //    Debug.Log(a);
+        //}
 
         //Debug.LogWarning("FindShortestPath not implemented yet!");
         return null;
