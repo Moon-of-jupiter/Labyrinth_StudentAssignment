@@ -37,11 +37,11 @@ public class AStar_Algorithm
 
         var f_cost_comp = new SimpleLamdaComparer<NavNode>((NavNode a, NavNode b) =>
         {
-            var comp = -a.f_cost.CompareTo(b.f_cost);
+            //var comp = -a.f_cost.CompareTo(b.f_cost);
 
-            if(comp == 0) return a.g_cost.CompareTo(b.g_cost);
+            //if(comp == 0) return -a.g_cost.CompareTo(b.g_cost);
 
-            return comp;
+            return -a.f_cost.CompareTo(b.f_cost); ;
         });
 
         open = new BinaryHeap<NavNode>(f_cost_comp, 4);
