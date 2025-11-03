@@ -2,7 +2,7 @@ using UnityEngine;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 
-public class MapConnection
+public struct MapConnection
 {
     public Vector2Int a;
     public Vector2Int b;

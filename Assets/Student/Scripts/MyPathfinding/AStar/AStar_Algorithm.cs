@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 public class AStar_Algorithm
@@ -37,10 +38,6 @@ public class AStar_Algorithm
 
         var f_cost_comp = new SimpleLamdaComparer<NavNode>((NavNode a, NavNode b) =>
         {
-            //var comp = -a.f_cost.CompareTo(b.f_cost);
-
-            //if(comp == 0) return -a.g_cost.CompareTo(b.g_cost);
-
             return -a.f_cost.CompareTo(b.f_cost); ;
         });
 
@@ -49,8 +46,8 @@ public class AStar_Algorithm
 
         
 
-        startNode = new NavNode(start, start, map_node_h_cost[start], 0);
-        OpenNode(startNode);
+       //&&startNode = new NavNode();
+        OpenNode(start, start, map_node_h_cost[start], 0);
 
 
     }
@@ -100,7 +97,7 @@ public class AStar_Algorithm
         while (PathFindOneStep())
         {
             c++;
-            if (c > 10000)
+            if (c > 100000)
             {
                 Debug.LogError("a* failed, too many iterations");
 
@@ -131,50 +128,53 @@ public class AStar_Algorithm
 
     private void CreateNeighbours(Vector2Int pos)
     {
-        foreach (var conn in map_graph_data.map_node_connections_by_node[pos])
+        
+        var connections = map_graph_data.map_node_connections_by_node[pos];
+        for (int i = 0; i < connections.Count(); i++)
         {
-            if (closed.Contains(conn.b)) continue;
-            OpenNode(new NavNode(conn.b,conn.a, map_node_h_cost[conn.b], conn.g_cost + nodes_byPos[conn.a].g_cost));
+            if (closed.Contains(connections[i].b)) continue;
+            OpenNode(connections[i].b, connections[i].a, map_node_h_cost[connections[i].b], connections[i].g_cost + nodes_byPos[connections[i].a].g_cost);
         }
     }
 
-    
 
-    //private NavNode AppendConnection(NavNode node, MapConnection conn)
+      // legacy
+    //private void OpenNode(NavNode node)
     //{
-    //    node.AppendConnnection(conn);
-    //    return node;
-    //}
+    //    if (closed.Contains(node.position)) return;
 
-
-
-    //private NavNode CreateNode(Vector2Int pos, float one_g_cost = 0)
-    //{
-    //    return new NavNode()
+    //    if (nodes_byPos.ContainsKey(node.position))
     //    {
-    //        position = pos,
-    //        parents = new List<Vector2Int>(),
-    //        g_cost = one_g_cost,
-    //        h_cost = map_node_h_cost[pos]
-    //    };
+    //        if (node.g_cost < nodes_byPos[node.position].g_cost)
+    //        {
+    //            ReplaceOpenNode(node);
+    //        }
+
+    //        return;
+    //    }
+
+    //    AddOpenNode(node);
     //}
 
-
-    private void OpenNode(NavNode node)
+    private NavNode OpenNode(Vector2Int position, Vector2Int parent, float h_cost, float g_cost)
     {
-        if (closed.Contains(node.position)) return;
+        if (closed.Contains(position)) return null;
+        NavNode node = null;
 
-        if (nodes_byPos.ContainsKey(node.position))
+
+        if (nodes_byPos.ContainsKey(position))
         {
-            if (node.g_cost < nodes_byPos[node.position].g_cost)
-            {
-                ReplaceOpenNode(node);
-            }
-
-            return;
+            if (!(g_cost < nodes_byPos[position].g_cost)) return null;
+            ReplaceOpenNode(node = new NavNode(position, parent, h_cost, g_cost));
+        }
+        else
+        {
+            AddOpenNode(node = new NavNode(position, parent, h_cost, g_cost));
         }
 
-        AddOpenNode(node);
+       
+
+        return node;
     }
 
     private void AddOpenNode(NavNode node)
@@ -193,7 +193,6 @@ public class AStar_Algorithm
     {
         var current = open.PopFirst();
 
-        //nodes_byPos.Remove(current.position);
         closed.Add(current.position);
 
         return current;

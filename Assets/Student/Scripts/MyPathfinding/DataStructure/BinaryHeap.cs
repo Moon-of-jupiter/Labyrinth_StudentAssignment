@@ -221,7 +221,7 @@ public class BinaryHeap<T>
         {
             int j = GetLeftChildIndex(index);
 
-            if (j < size && Less(j, j + 1)) j++;
+            if (j < size && Less(j, j + 1)) j++; // är samma som j = GetRightChildIndex(index)
             if (!Less(index, j)) break;
             Swap(index, j);
             index = j;

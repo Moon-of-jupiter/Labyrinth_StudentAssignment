@@ -63,25 +63,7 @@ public static class PathfindingAlgorithm
         {
             return path;
         }
-        //SimpleLamdaComparer<int> comp = new SimpleLamdaComparer<int>((int a, int b) => { return -a.CompareTo(b); });
-
-        //BinaryHeap<int> testHeap = new(comp);
-
-        //testHeap.Push(10);
-        //testHeap.Push(11);
-        //testHeap.Push(5);
-        //testHeap.Push(6);
-
-        //testHeap.RemoveItem(6);
-
-        //testHeap.ReplaceItem(5,20);
-
-        //while (testHeap.TryPopFirst(out var a))
-        //{
-        //    Debug.Log(a);
-        //}
-
-        //Debug.LogWarning("FindShortestPath not implemented yet!");
+        
         return null;
     }
 
@@ -96,18 +78,6 @@ public static class PathfindingAlgorithm
     
 
     
-   
-
-    public static void Visualize(Grid grid, Vector3 offset)
-    {
-        //LastPathfind.Visualize(grid, offset);
-    }
-
-    public static void OnApplicationEnd()
-    {
-        
-    }
-
 
 
 }

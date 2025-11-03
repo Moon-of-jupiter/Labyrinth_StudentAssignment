@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct NavNode
+public class NavNode
 {
     public float h_cost;
     public float g_cost;

@@ -113,13 +113,7 @@ public class PathfinderManager : MonoBehaviour
         }
     }
 
-    private void OnDrawGizmos()
-    {
-        if (characterMovement?.GetGrid() != null && isActiveAndEnabled)
-        {
-            PathfindingAlgorithm.Visualize(characterMovement.GetGrid(), visual_offset);
-        }
-    }
+   
 
     private float CalculatePathCost(List<Vector2Int> path)
     {
@@ -296,6 +290,5 @@ public class PathfinderManager : MonoBehaviour
     private void OnDestroy()
     {
         ClearDebugPath();
-        PathfindingAlgorithm.OnApplicationEnd();
     }
 }
