@@ -466,7 +466,7 @@ PrefabInstance:
       objectReference: {fileID: 2120782614}
     - target: {fileID: 2697895973313742624, guid: 0a7983cc724fc554a9cbc4ef450723a9, type: 3}
       propertyPath: fileName
-      value: ex2.json
+      value: test_big_1.json
       objectReference: {fileID: 0}
     - target: {fileID: 2697895973313742624, guid: 0a7983cc724fc554a9cbc4ef450723a9, type: 3}
       propertyPath: endPrefab
@@ -474,12 +474,16 @@ PrefabInstance:
       objectReference: {fileID: 1093558810265427060, guid: d983414088423d547a0c8de1c3bb6c1c, type: 3}
     - target: {fileID: 2697895973313742624, guid: 0a7983cc724fc554a9cbc4ef450723a9, type: 3}
       propertyPath: questIndex
-      value: 0
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2697895973313742624, guid: 0a7983cc724fc554a9cbc4ef450723a9, type: 3}
       propertyPath: startPrefab
       value: 
       objectReference: {fileID: 7330026101753579403, guid: 7c6f507ad8411764db44657ab955b5d7, type: 3}
+    - target: {fileID: 2697895973313742624, guid: 0a7983cc724fc554a9cbc4ef450723a9, type: 3}
+      propertyPath: groundPrefab
+      value: 
+      objectReference: {fileID: 916917378494744782, guid: f01afdaa8dc309d47bb6c13cc85a4428, type: 3}
     - target: {fileID: 2697895973313742624, guid: 0a7983cc724fc554a9cbc4ef450723a9, type: 3}
       propertyPath: hWallLowPrefab
       value: 
